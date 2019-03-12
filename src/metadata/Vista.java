@@ -1,7 +1,8 @@
 /*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+ * Observaciones de Codigo:
+ * FileChooser: es una clase java que nos permite mostrar fácilmente una ventana para la selección de un fichero
+ * Para diferenciar las extenciones se uso el concepto de Expresiones regulares en java
+ * https://www.youtube.com/watch?v=_uNtV-BaU0g
  */
 package metadata;
 
@@ -12,6 +13,8 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import javax.swing.JFileChooser;
 import javax.swing.filechooser.FileSystemView;
 
@@ -110,6 +113,7 @@ public class Vista extends javax.swing.JFrame {
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         //metodo que carga la ventana para seleccionar archivo
         JFileChooser file = new JFileChooser(FileSystemView.getFileSystemView().getHomeDirectory());
+        //Dialogo que permite mostrar la ventana para seleccionar el archivo.
         file.showOpenDialog(file);
         
         //crear variable tipo File que obtiene el archivo seleccionado
@@ -120,15 +124,42 @@ public class Vista extends javax.swing.JFrame {
         String ruta = archivo.getPath();
         Boolean leer = archivo.canRead();
         Boolean escribir = archivo.canWrite();
-        long tamaño = archivo.length();
+        long tamaño = archivo.length();        
+        
         
         //Area de vista previa del archivo
         try {
             FileReader fr = new FileReader (archivo);
             BufferedReader br = new BufferedReader(fr);
             String contenido = br.readLine();
+            
+            //Expresiones regulares para encontar patron en una lista de caracteres
+            //Clase pattern = representacion compilada de una expresion regular define lo que se va a evaluar
+            Pattern ext1 = Pattern.compile(".*(txt)$");
+            //Objeto Matcher define la variable o cadena que queremos evaluar Devuelve un valor Booleano
+            Matcher txt = ext1.matcher(nombre);
+            Pattern ext2 = Pattern.compile(".*(png)$");
+            Matcher png = ext2.matcher(nombre);
+            Pattern ext3 = Pattern.compile(".*(pdf)$");
+            Matcher pdf = ext3.matcher(nombre);
+            if (txt.matches()== true)
+            {
+                System.out.println("Archivo de texto");
+            }
+            else if (png.matches()==true){
+                System.out.println("Archivo imagen png");                
+            }
+            else if (pdf.matches()==true){
+                System.out.println("Archivo PDF"); 
+            } else{
+                System.out.println("Extencion NO soportada"); 
+            }
+            
+            //System.out.println(m.matches());
+            
             while(contenido !=null){
-               //metodo append = sirve para concatenar otra cadadena de caracteres al final de otra 
+               //metodo append = sirve para concatenar otra cadadena de caracteres al final de otra
+               //con el metodo set solamente muestra la primer linea
                jTextArea2.append(contenido+"\n");
                //System.out.println(contenido);
                contenido = br.readLine();
