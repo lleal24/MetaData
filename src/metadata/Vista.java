@@ -3,9 +3,12 @@
  * FileChooser: es una clase java que nos permite mostrar fácilmente una ventana para la selección de un fichero
  * Para diferenciar las extenciones se uso el concepto de Expresiones regulares en java
  * https://www.youtube.com/watch?v=_uNtV-BaU0g
+ * https://rubular.com/
  */
 package metadata;
 
+import java.awt.Desktop;
+import java.awt.Image;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -15,7 +18,10 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import javax.swing.ImageIcon;
 import javax.swing.JFileChooser;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.filechooser.FileSystemView;
 
 /**
@@ -23,6 +29,8 @@ import javax.swing.filechooser.FileSystemView;
  * @author user
  */
 public class Vista extends javax.swing.JFrame {
+
+    private Object panel;
 
     /**
      * Creates new form Vista
@@ -47,6 +55,8 @@ public class Vista extends javax.swing.JFrame {
         jTextArea1 = new javax.swing.JTextArea();
         jScrollPane2 = new javax.swing.JScrollPane();
         jTextArea2 = new javax.swing.JTextArea();
+        jLabel3 = new javax.swing.JLabel();
+        jLabel4 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Meta Data");
@@ -60,7 +70,7 @@ public class Vista extends javax.swing.JFrame {
 
         jLabel1.setText("Meta Data");
 
-        jLabel2.setText("Vista Previa");
+        jLabel2.setText("Vista Previa Texto");
 
         jTextArea1.setColumns(20);
         jTextArea1.setRows(5);
@@ -69,6 +79,8 @@ public class Vista extends javax.swing.JFrame {
         jTextArea2.setColumns(20);
         jTextArea2.setRows(5);
         jScrollPane2.setViewportView(jTextArea2);
+
+        jLabel4.setText("Vista Previa Imagen");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -79,31 +91,44 @@ public class Vista extends javax.swing.JFrame {
                 .addComponent(jButton1)
                 .addGap(38, 38, 38))
             .addGroup(layout.createSequentialGroup()
-                .addGap(49, 49, 49)
-                .addComponent(jLabel1)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(jLabel2)
-                .addGap(116, 116, 116))
-            .addGroup(layout.createSequentialGroup()
-                .addGap(25, 25, 25)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 358, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 356, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(22, Short.MAX_VALUE))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(25, 25, 25)
+                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 358, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(149, 149, 149)
+                        .addComponent(jLabel1)))
+                .addGap(18, 18, 18)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 356, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                        .addComponent(jLabel2)
+                        .addGap(115, 115, 115)))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(12, 12, 12)
+                        .addComponent(jLabel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addContainerGap())
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(64, 64, 64)
+                        .addComponent(jLabel4)
+                        .addContainerGap(94, Short.MAX_VALUE))))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(jButton1)
-                .addGap(18, 18, 18)
+                .addGap(22, 22, 22)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel1)
-                    .addComponent(jLabel2))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                    .addComponent(jLabel4)
+                    .addComponent(jLabel2)
+                    .addComponent(jLabel1))
+                .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 304, Short.MAX_VALUE)
-                    .addComponent(jScrollPane1))
+                    .addComponent(jScrollPane1)
+                    .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 400, Short.MAX_VALUE)
+                    .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 240, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap())
         );
 
@@ -115,69 +140,72 @@ public class Vista extends javax.swing.JFrame {
         JFileChooser file = new JFileChooser(FileSystemView.getFileSystemView().getHomeDirectory());
         //Dialogo que permite mostrar la ventana para seleccionar el archivo.
         file.showOpenDialog(file);
-        
+
         //crear variable tipo File que obtiene el archivo seleccionado
         File archivo = file.getSelectedFile();
-        
+
         //variables para obtener la metadata deseada
         String nombre = archivo.getName();
         String ruta = archivo.getPath();
         Boolean leer = archivo.canRead();
         Boolean escribir = archivo.canWrite();
-        long tamaño = archivo.length();        
-        
-        
+        long tamaño = archivo.length();
+
         //Area de vista previa del archivo
         try {
-            FileReader fr = new FileReader (archivo);
+            FileReader fr = new FileReader(archivo);
             BufferedReader br = new BufferedReader(fr);
             String contenido = br.readLine();
-            
+
             //Expresiones regulares para encontar patron en una lista de caracteres
             //Clase pattern = representacion compilada de una expresion regular define lo que se va a evaluar
             Pattern ext1 = Pattern.compile(".*(txt)$");
             //Objeto Matcher define la variable o cadena que queremos evaluar Devuelve un valor Booleano
             Matcher txt = ext1.matcher(nombre);
-            Pattern ext2 = Pattern.compile(".*(png)$");
+            Pattern ext2 = Pattern.compile(".*(png|jpg)$");
             Matcher png = ext2.matcher(nombre);
             Pattern ext3 = Pattern.compile(".*(pdf)$");
             Matcher pdf = ext3.matcher(nombre);
-            if (txt.matches()== true)
-            {
-                System.out.println("Archivo de texto");
-            }
-            else if (png.matches()==true){
-                System.out.println("Archivo imagen png");                
-            }
-            else if (pdf.matches()==true){
-                System.out.println("Archivo PDF"); 
-            } else{
-                System.out.println("Extencion NO soportada"); 
-            }
-            
-            //System.out.println(m.matches());
-            
-            while(contenido !=null){
+            if (txt.matches() == true) {
+                //Vista previa para archivos .txt
+                while (contenido != null) {
                //metodo append = sirve para concatenar otra cadadena de caracteres al final de otra
-               //con el metodo set solamente muestra la primer linea
-               jTextArea2.append(contenido+"\n");
-               //System.out.println(contenido);
-               contenido = br.readLine();
+                    //con el metodo set solamente muestra la primer linea
+                    jTextArea2.append(contenido + "\n");
+                    //System.out.println(contenido);
+                    contenido = br.readLine();
+                }
+                jLabel3.setIcon(null);
+                System.out.println("Archivo de texto");
+            } else if (png.matches() == true) {
+                //Vista previa para archivos imagen .png y .jpg
+                ImageIcon imagen = new ImageIcon(ruta);
+                ImageIcon scaleImagen = new ImageIcon(imagen.getImage().getScaledInstance(jLabel3.getWidth(), jLabel3.getHeight(), Image.SCALE_DEFAULT));
+                jLabel3.setIcon(scaleImagen);
+                jTextArea2.setText("");
+
+                System.out.println("Archivo imagen png");
+            } else if (pdf.matches() == true) {
+                Desktop.getDesktop().open(new File(ruta));
+                System.out.println("Archivo PDF");
+            } else {
+                JOptionPane.showMessageDialog(null, "Error Extension NO soportada para vista previa");
+                //System.out.println("Extencion NO soportada"); 
             }
-                       
-            
+
+            //System.out.println(m.matches());
         } catch (FileNotFoundException ex) {
             System.out.println("Error fichero no encontrado");
         } catch (IOException ex) {
-            
+
         }
-        
+
         //Area de impresion de Metadata
-        jTextArea1.setText("Nombre de archivo: "+nombre+"\n"+
-                "Ubicacion: "+ruta+"\n"    
-                +"Tamaño: "+tamaño+" bytes\n"
-                +"Se puede leer: "+leer+"\n"
-                +"Se puede escribir: "+escribir+"\n");
+        jTextArea1.setText("Nombre de archivo: " + nombre + "\n"
+                + "Ubicacion: " + ruta + "\n"
+                + "Tamaño: " + tamaño + " bytes\n"
+                + "Se puede leer: " + leer + "\n"
+                + "Se puede escribir: " + escribir + "\n");
     }//GEN-LAST:event_jButton1ActionPerformed
 
     /**
@@ -219,6 +247,8 @@ public class Vista extends javax.swing.JFrame {
     private javax.swing.JButton jButton1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel3;
+    private javax.swing.JLabel jLabel4;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JTextArea jTextArea1;
