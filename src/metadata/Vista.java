@@ -4,6 +4,7 @@
  * Para diferenciar las extenciones se uso el concepto de Expresiones regulares en java
  * https://www.youtube.com/watch?v=_uNtV-BaU0g
  * https://rubular.com/
+ * http://elpaladintecnologico.blogspot.com/2014/11/como-leer-informacion-del-pdf-y.html
  */
 package metadata;
 
@@ -23,6 +24,12 @@ import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.filechooser.FileSystemView;
+import com.teamdev.jxdocument.Document;
+import com.teamdev.jxdocument.Page;
+import java.awt.Dimension;
+import java.awt.image.BufferedImage;
+import java.awt.image.RenderedImage;
+import javax.imageio.ImageIO;
 
 /**
  *
@@ -80,7 +87,7 @@ public class Vista extends javax.swing.JFrame {
         jTextArea2.setRows(5);
         jScrollPane2.setViewportView(jTextArea2);
 
-        jLabel4.setText("Vista Previa Imagen");
+        jLabel4.setText("Vista Previa Imagen y PDF");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -112,7 +119,7 @@ public class Vista extends javax.swing.JFrame {
                     .addGroup(layout.createSequentialGroup()
                         .addGap(64, 64, 64)
                         .addComponent(jLabel4)
-                        .addContainerGap(94, Short.MAX_VALUE))))
+                        .addContainerGap(320, Short.MAX_VALUE))))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -127,8 +134,8 @@ public class Vista extends javax.swing.JFrame {
                 .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jScrollPane1)
-                    .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 400, Short.MAX_VALUE)
-                    .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 240, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 614, Short.MAX_VALUE)
+                    .addComponent(jLabel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
         );
 
@@ -169,7 +176,7 @@ public class Vista extends javax.swing.JFrame {
             if (txt.matches() == true) {
                 //Vista previa para archivos .txt
                 while (contenido != null) {
-               //metodo append = sirve para concatenar otra cadadena de caracteres al final de otra
+                    //metodo append = sirve para concatenar otra cadadena de caracteres al final de otra
                     //con el metodo set solamente muestra la primer linea
                     jTextArea2.append(contenido + "\n");
                     //System.out.println(contenido);
@@ -185,12 +192,33 @@ public class Vista extends javax.swing.JFrame {
                 jTextArea2.setText("");
 
                 System.out.println("Archivo imagen png");
+                //vista PDF
             } else if (pdf.matches() == true) {
-                Desktop.getDesktop().open(new File(ruta));
-                System.out.println("Archivo PDF");
+                //uso de libreria jxdocument
+                Document document = new Document(archivo);
+                // obtiene el total de paginas
+                int pageCount = document.getPageCount();
+                if (pageCount > 0) {
+                    // GET obtiene la primer pagina
+                    Page page = document.getPageAt(0);
+                    // Get Page size = obtiene el tamaño de la pagina en pixeles
+                    Dimension pageSize = page.getSize();
+                    // Get Image of the page with specified width and height
+                    Image pageImage = page.convertToImage(pageSize.width, pageSize.height);
+                    // Save Image into PNG file.
+                    ImageIO.write((RenderedImage) pageImage, "PNG", new File("TeamDev-1.png"));
+                    ImageIcon imagenPDF = new ImageIcon("TeamDev-1.png");
+                    ImageIcon scaleImagen = new ImageIcon(imagenPDF.getImage().getScaledInstance(jLabel3.getWidth(), jLabel3.getHeight(), Image.SCALE_DEFAULT));
+                    jLabel3.setIcon(scaleImagen);
+                    
+                }
+                // Close document to release all allocated resources and memory
+                document.close();
+
+                //Desktop.getDesktop().open(new File(ruta));
+                System.out.println(pageCount);
             } else {
                 JOptionPane.showMessageDialog(null, "Error Extension NO soportada para vista previa");
-                //System.out.println("Extencion NO soportada"); 
             }
 
             //System.out.println(m.matches());
