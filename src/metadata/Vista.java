@@ -8,26 +8,21 @@
  */
 package metadata;
 
-import java.awt.Desktop;
 import java.awt.Image;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.swing.ImageIcon;
 import javax.swing.JFileChooser;
-import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.filechooser.FileSystemView;
 import com.teamdev.jxdocument.Document;
 import com.teamdev.jxdocument.Page;
 import java.awt.Dimension;
-import java.awt.image.BufferedImage;
 import java.awt.image.RenderedImage;
 import javax.imageio.ImageIO;
 
